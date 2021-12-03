@@ -3,6 +3,7 @@
 ###############################################################################
 from enum import IntEnum
 import smbus2 as smbus
+import time
 
 ###########################################################################
 # ERROR CLASSES
@@ -35,7 +36,7 @@ class ADS7828():
     ###########################################################################
     _device_addr = None                 #
     _command_byte = None                #
-    _bit_res = 12                       #
+    _bit_res = None                     #
     _voltage_reference = None           #
     _reference_warmup_time = None       #
     _millivolt_resolution = None        #
@@ -59,10 +60,10 @@ class ADS7828():
         #   A0 = ADDRESS BIT 0 PIN STATE (1=HIGH/H, 0=LOW/L)
         #   7-BIT ADDRESS: 0b[ 1 0 0 1 0 A1 A0 R/W ]
         #                     MSB              LSB
-        I2C_ADDR_LL = 0x48
-        I2C_ADDR_LH = 0x49
-        I2C_ADDR_HL = 0x4A
-        I2C_ADDR_HH = 0x4B
+        I2C_ADDR_LL = 0x48 #0b1001000
+        I2C_ADDR_LH = 0x49 #0b1001001
+        I2C_ADDR_HL = 0x4A #0b1001010
+        I2C_ADDR_HH = 0x4B #0b1001011
     
     class InputsRegister(IntEnum):
         """
@@ -73,23 +74,21 @@ class ADS7828():
         SINGLE_ENDED = 0x80
         DIFFERENTIAL = 0x00
 
-    #TODO: UPDATE VALUES
     class SingleEndedChannelSelectionRegister(IntEnum):
         """
         This register enum class defines the bits in the command byte that set
         the channel selection for the measurement for single-ended measurements. 
         See datasheet page 11.
         """
-        CH0 = 0x80
-        CH1 = 0x80
-        CH2 = 0x80
-        CH3 = 0x80
-        CH4 = 0x80
-        CH5 = 0x80
-        CH6 = 0x80
-        CH7 = 0x80
+        CH0 = 0x80 #0b10000000 
+        CH1 = 0xC0 #0b11000000
+        CH2 = 0x90 #0b10010000
+        CH3 = 0xD0 #0b11010000
+        CH4 = 0xA0 #0b10100000
+        CH5 = 0xE0 #0b11100000
+        CH6 = 0xB0 #0b10110000
+        CH7 = 0xF0 #0b11110000
 
-    #TODO: UPDATE VALUES
     class DifferentialPositiveChannelSelectionRegister(IntEnum):
         """
         This register enum class defines the bits in the command byte that set
@@ -98,10 +97,10 @@ class ADS7828():
         See datasheet page 11.
         """
         # Polarity:   +   -
-        DIFFERENTIAL_CH0_CH1 = 0x80
-        DIFFERENTIAL_CH2_CH3 = 0x80
-        DIFFERENTIAL_CH4_CH5 = 0x80
-        DIFFERENTIAL_CH6_CH7 = 0x80
+        DIFFERENTIAL_CH0_CH1 = 0x00 #0b00000000
+        DIFFERENTIAL_CH2_CH3 = 0x10 #0b00010000
+        DIFFERENTIAL_CH4_CH5 = 0x20 #0b00100000
+        DIFFERENTIAL_CH6_CH7 = 0x30 #0b00110000
 
     #TODO: UPDATE VALUES
     class DifferentialNegativeChannelSelectionRegister(IntEnum):
@@ -112,10 +111,10 @@ class ADS7828():
         See datasheet page 11.
         """
         # Polarity:   +   -
-        DIFFERENTIAL_CH1_CH0 = 0x80
-        DIFFERENTIAL_CH3_CH2 = 0x80
-        DIFFERENTIAL_CH5_CH4 = 0x80
-        DIFFERENTIAL_CH7_CH6 = 0x80
+        DIFFERENTIAL_CH1_CH0 = 0x40 #0b01000000
+        DIFFERENTIAL_CH3_CH2 = 0x50 #0b01010000
+        DIFFERENTIAL_CH5_CH4 = 0x60 #0b01100000
+        DIFFERENTIAL_CH7_CH6 = 0x70 #0b01110000
 
     #TODO: UPDATE VALUES
     class PowerDownSelectionRegister(IntEnum):
@@ -123,10 +122,10 @@ class ADS7828():
         This register enum class defines the bits in the command byte that set
         the power-down selection for the measurement. See datasheet page 11.
         """
-        POWER_DOWN_BTWN_AD_CONVERSIONS = 0x80
-        INTERNAL_REF_OFF_AD_ON         = 0x80
-        INTERNAL_REF_ON_AD_OFF         = 0x80
-        INTERNAL_REF_ON_AD_ON          = 0x80
+        POWER_DOWN_BTWN_AD_CONVERSIONS = 0x00 #0b00000000
+        INTERNAL_REF_OFF_AD_ON         = 0x04 #0b00000100
+        INTERNAL_REF_ON_AD_OFF         = 0x08 #0b00001000
+        INTERNAL_REF_ON_AD_ON          = 0x0C #0b00001100
     
     ###########################################################################
     # CONSTRUCTOR METHOD
@@ -144,7 +143,10 @@ class ADS7828():
         self.check_address()
 
         #Set defaults
-        default_config()
+        self._default_config()
+
+        #Initialize I2C bus (SMBus) object
+        self._set_up_i2c_bus()
 
 
     ###########################################################################
@@ -176,12 +178,43 @@ class ADS7828():
 
         raw_voltage = chan_read_func_map[channel](internal_ref_on, ad_on)
 
-        return raw_voltage 
+        return raw_voltage
+
+    def read_channel_single_ended_averaged(self, channel, 
+                                           internal_ref_on=True, ad_on=True,
+                                           num_measurements=10, dt=10):
+        """
+        Communicates with the device multiple times to collect a single-ended measurements 
+        of a channel with input options for internal reference state and A/D converter state 
+        over a period of time num_measurements*dt. This is effectively a low-pass filter. 
+    
+        Parameters:
+        channel (int): Channel number (0 to 7)
+        internal_ref_on (bool): True means internal reference will be turned ON, False means OFF
+        ad_on (bool): True means A/D converter will be turned ON, False means OFF
+        num_measurements (int): Number of measurements to be collected in averaging
+        dt (float): Time between measurement recordings
+    
+        Returns:
+        int: averaged voltage value (in volts, V) from selected channel over time num_measurements*dt
+        """
+
+        v_sum = 0
+        for i in range(num_measurements):
+            v_sum += self.read_channel_single_ended(channel,
+                                                    internal_ref_on=internal_ref_on,
+                                                    ad_on=ad_on)
+            time.sleep(dt)
+
+        raw_voltage_avg = v_sum / num_measurements
+        
+        return raw_voltage_avg
     
 
-
+    ###########################################################################
     ###########################################################################
     # PRIVATE MEMBER METHODS (I.E. API METHODS)
+    ###########################################################################
     ###########################################################################
     def _check_address(self):
         """
@@ -195,10 +228,16 @@ class ADS7828():
         """
         Set all configuration variables 
         """
-        #I2C Bus Setup --> defaults to Raspberry Pi default I2C bus number
-        self._i2c_bus = smbus.SMBus(1)
+        self._command_byte = None                #
+        self._bit_res = 12                       #
+        self._voltage_reference = 2.5            #internal reference voltage [V]
+        self._reference_warmup_time = 0.001      #
+        self._single_ended_mode = True           #
+        self._i2c_bus_num = 1                    #
 
-        self._voltage_reference = 2.5 #internal reference voltage [V]
+    def _set_up_i2c_bus(self):
+        #I2C Bus Setup --> defaults to Raspberry Pi default I2C bus number
+        self._i2c_bus = smbus.SMBus(self._i2c_bus_num)
 
     def _read_channel_single_ended_0(self, internal_ref_on=True, ad_on=True):
         """
