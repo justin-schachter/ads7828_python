@@ -164,9 +164,17 @@ class ADS7828():
         Returns:
         int: voltage value (in volts, V) from selected channel
         """
-        channel_names = [c.name for c in SingleEndedChannelSelectionRegister]
-        
+        chan_read_func_map = [self._read_channel_single_ended_0,
+                              self._read_channel_single_ended_1,
+                              self._read_channel_single_ended_2,
+                              self._read_channel_single_ended_3,
+                              self._read_channel_single_ended_4,
+                              self._read_channel_single_ended_5,
+                              self._read_channel_single_ended_6,
+                              self._read_channel_single_ended_7,
+                             ]
 
+        raw_voltage = chan_read_func_map[channel](internal_ref_on, ad_on)
 
         return raw_voltage 
     
@@ -195,7 +203,7 @@ class ADS7828():
     def _read_channel_single_ended_0(self, internal_ref_on=True, ad_on=True):
         """
         [PRIVATE] Communicates with the device to collect a single-ended 
-        measurement of a channel with input options for internal reference 
+        measurement of channel 0 with input options for internal reference 
         state and A/D converter state
     
         Parameters:
@@ -206,11 +214,145 @@ class ADS7828():
         int: voltage value (in volts, V) from selected channel
         """
         channel_select = self.SingleEndedChannelSelectionRegister.CH0
-        power_select_bits = _iref_and_ad_on_states(internal_ref_on,ad_on)
+        power_select_bits = self._iref_and_ad_on_states(internal_ref_on, ad_on)
         self._command_byte = channel_select | power_select_bits
+        # return raw voltage on pin
+        return self._send_cmd_and_read_device()
 
+    def _read_channel_single_ended_1(self, internal_ref_on=True, ad_on=True):
+        """
+        [PRIVATE] Communicates with the device to collect a single-ended 
+        measurement of channel 1 with input options for internal reference 
+        state and A/D converter state
+    
+        Parameters:
+        internal_ref_on (bool): True means internal reference will be turned ON, False means OFF
+        ad_on (bool): True means A/D converter will be turned ON, False means OFF
+    
+        Returns:
+        int: voltage value (in volts, V) from selected channel
+        """
+        channel_select = self.SingleEndedChannelSelectionRegister.CH1
+        power_select_bits = self._iref_and_ad_on_states(internal_ref_on,ad_on)
+        self._command_byte = channel_select | power_select_bits
+        # return raw voltage on pin
+        return self._send_cmd_and_read_device()
+
+    def _read_channel_single_ended_2(self, internal_ref_on=True, ad_on=True):
+        """
+        [PRIVATE] Communicates with the device to collect a single-ended 
+        measurement of channel 2 with input options for internal reference 
+        state and A/D converter state
+    
+        Parameters:
+        internal_ref_on (bool): True means internal reference will be turned ON, False means OFF
+        ad_on (bool): True means A/D converter will be turned ON, False means OFF
+    
+        Returns:
+        int: voltage value (in volts, V) from selected channel
+        """
+        channel_select = self.SingleEndedChannelSelectionRegister.CH2
+        power_select_bits = self._iref_and_ad_on_states(internal_ref_on,ad_on)
+        self._command_byte = channel_select | power_select_bits
+        # return raw voltage on pin
+        return self._send_cmd_and_read_device()
+
+    def _read_channel_single_ended_3(self, internal_ref_on=True, ad_on=True):
+        """
+        [PRIVATE] Communicates with the device to collect a single-ended 
+        measurement of channel 3 with input options for internal reference 
+        state and A/D converter state
+    
+        Parameters:
+        internal_ref_on (bool): True means internal reference will be turned ON, False means OFF
+        ad_on (bool): True means A/D converter will be turned ON, False means OFF
+    
+        Returns:
+        int: voltage value (in volts, V) from selected channel
+        """
+        channel_select = self.SingleEndedChannelSelectionRegister.CH3
+        power_select_bits = self._iref_and_ad_on_states(internal_ref_on,ad_on)
+        self._command_byte = channel_select | power_select_bits
+        # return raw voltage on pin
         return self._send_cmd_and_read_device()
     
+    def _read_channel_single_ended_4(self, internal_ref_on=True, ad_on=True):
+        """
+        [PRIVATE] Communicates with the device to collect a single-ended 
+        measurement of channel 4 with input options for internal reference 
+        state and A/D converter state
+    
+        Parameters:
+        internal_ref_on (bool): True means internal reference will be turned ON, False means OFF
+        ad_on (bool): True means A/D converter will be turned ON, False means OFF
+    
+        Returns:
+        int: voltage value (in volts, V) from selected channel
+        """
+        channel_select = self.SingleEndedChannelSelectionRegister.CH4
+        power_select_bits = self._iref_and_ad_on_states(internal_ref_on,ad_on)
+        self._command_byte = channel_select | power_select_bits
+        # return raw voltage on pin
+        return self._send_cmd_and_read_device()
+
+    def _read_channel_single_ended_5(self, internal_ref_on=True, ad_on=True):
+        """
+        [PRIVATE] Communicates with the device to collect a single-ended 
+        measurement of channel 5 with input options for internal reference 
+        state and A/D converter state
+    
+        Parameters:
+        internal_ref_on (bool): True means internal reference will be turned ON, False means OFF
+        ad_on (bool): True means A/D converter will be turned ON, False means OFF
+    
+        Returns:
+        int: voltage value (in volts, V) from selected channel
+        """
+        channel_select = self.SingleEndedChannelSelectionRegister.CH5
+        power_select_bits = self._iref_and_ad_on_states(internal_ref_on,ad_on)
+        self._command_byte = channel_select | power_select_bits
+        # return raw voltage on pin
+        return self._send_cmd_and_read_device()
+
+    def _read_channel_single_ended_6(self, internal_ref_on=True, ad_on=True):
+        """
+        [PRIVATE] Communicates with the device to collect a single-ended 
+        measurement of channel 6 with input options for internal reference 
+        state and A/D converter state
+    
+        Parameters:
+        internal_ref_on (bool): True means internal reference will be turned ON, False means OFF
+        ad_on (bool): True means A/D converter will be turned ON, False means OFF
+    
+        Returns:
+        int: voltage value (in volts, V) from selected channel
+        """
+        channel_select = self.SingleEndedChannelSelectionRegister.CH6
+        power_select_bits = self._iref_and_ad_on_states(internal_ref_on,ad_on)
+        self._command_byte = channel_select | power_select_bits
+        # return raw voltage on pin
+        return self._send_cmd_and_read_device()
+
+    def _read_channel_single_ended_7(self, internal_ref_on=True, ad_on=True):
+        """
+        [PRIVATE] Communicates with the device to collect a single-ended 
+        measurement of channel 7 with input options for internal reference 
+        state and A/D converter state
+    
+        Parameters:
+        internal_ref_on (bool): True means internal reference will be turned ON, False means OFF
+        ad_on (bool): True means A/D converter will be turned ON, False means OFF
+    
+        Returns:
+        int: voltage value (in volts, V) from selected channel
+        """
+        channel_select = self.SingleEndedChannelSelectionRegister.CH7
+        power_select_bits = self._iref_and_ad_on_states(internal_ref_on,ad_on)
+        self._command_byte = channel_select | power_select_bits
+        # return raw voltage on pin
+        return self._send_cmd_and_read_device()
+
+
     def _iref_and_ad_on_states(internal_ref_on, ad_on):
         """
         [PRIVATE] takes in a desired power state of the internal refence voltage and
@@ -232,6 +374,38 @@ class ADS7828():
 
         return INTERNAL_REF_ON_BIT | AD_CONVERTER_ON_BIT
 
-    def _clear_command_byte_buffer(self)
+    def _clear_command_byte(self):
         self._command_byte = None
+
+    def _send_cmd_and_read_device(self):
+        # Write to device
+        self._i2c_bus.write_byte(self._device_addr, 
+                                 self._command_byte)
+        
+        # Wait some ammount of time for reference to warmup 
+        # see datasheet
+        time.sleep(self._reference_warmup_time)
+        
+        # Read 2 bytes
+        raw_data_bytes = self._i2c_bus.read_i2c_block_data(self._device_addr, 
+                                                           self._command_byte,
+                                                           2)
+
+        # Convert the 2 raw bytes (16 bits) into 12 bit number
+        # This 12 bit number represents the number of ADC counts
+        # Operations:
+        #   - Take least significant 4 bits (i.e. rightmost) from byte0
+        #     by zeroing out the left most bits via AND op, i.e. raw_data_bytes[0] & 0b00001111
+        #   - Left shift those bits by 8 bits by multiplying by 256 (0b100000000): 
+        #   - Add byte1 to this value to make the final 12 bit reading
+        raw_a2d_cnt = ( (raw_data_bytes[0] & 0b00001111 ) * 256 ) + raw_data_bytes[1]
+
+        # Convert 12 bit count to measured voltage on the device pin
+        raw_voltage = self._convert_dn_to_volts(raw_a2d_cnt)
+
+    def _convert_dn_to_volts(self, measurement_cnt):
+        # Millivolts per count
+        mv_per_cnt = self._voltage_reference / pow(2, self._bit_res)
+
+        return mv_per_cnt * measurement_cnt
         
