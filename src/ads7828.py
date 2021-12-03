@@ -20,9 +20,9 @@ class AddressSelectionError(Exception):
         self.address = device._device_addr
         list_of_available_addr_dec = [a.value for a in device.DeviceAddress]
         list_of_available_addr_hex = [hex(a.value) for a in device.DeviceAddress]
-        self.message = f'Address selected for device ({self.address}) does'+\ 
-                        'not match any of the available addresses (int):\n'+\
-                       f'dec: {list_of_available_addr_dec}\n'+\
+        self.message = f'Address selected for device ({self.address}) does' + \
+                        'not match any of the available addresses (int):\n' + \
+                       f'dec: {list_of_available_addr_dec}\n'               + \
                        f'hex: {list_of_available_addr_hex}\n'    
         super().__init__(self.message)
 
@@ -140,7 +140,7 @@ class ADS7828():
         """
         #Set address and check if user set address is valid
         self._device_addr = address
-        self.check_address()
+        self._check_address()
 
         #Set defaults
         self._default_config()
