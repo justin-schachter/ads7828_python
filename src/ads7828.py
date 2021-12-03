@@ -2,8 +2,10 @@
 # Author: Justin Schachter (jschach@umich.edu)
 ###############################################################################
 from enum import IntEnum
-import smbus2 as smbus
 import time
+
+import smbus2 as smbus
+from tabulate import tabulate
 
 ###########################################################################
 # ERROR CLASSES
@@ -20,9 +22,8 @@ class AddressSelectionError(Exception):
         self.address = device._device_addr
         list_of_available_addr_dec = [a.value for a in device.DeviceAddress]
         list_of_available_addr_hex = [hex(a.value) for a in device.DeviceAddress]
-        self.message = f'Address selected for device ({self.address}) does' + \
-                        'not match any of the available addresses (int):\n' + \
-                       f'dec: {list_of_available_addr_dec}\n'               + \
+        self.message = f'Address selected for device (attempted: {self.address} / {hex(self.address)}) does not match any of the available addresses:\n' + \
+                       f'dec: {list_of_available_addr_dec}\n' + \
                        f'hex: {list_of_available_addr_hex}\n'    
         super().__init__(self.message)
 
@@ -102,7 +103,6 @@ class ADS7828():
         DIFFERENTIAL_CH4_CH5 = 0x20 #0b00100000
         DIFFERENTIAL_CH6_CH7 = 0x30 #0b00110000
 
-    #TODO: UPDATE VALUES
     class DifferentialNegativeChannelSelectionRegister(IntEnum):
         """
         This register enum class defines the bits in the command byte that set
@@ -116,7 +116,6 @@ class ADS7828():
         DIFFERENTIAL_CH5_CH4 = 0x60 #0b01100000
         DIFFERENTIAL_CH7_CH6 = 0x70 #0b01110000
 
-    #TODO: UPDATE VALUES
     class PowerDownSelectionRegister(IntEnum):
         """
         This register enum class defines the bits in the command byte that set
@@ -146,6 +145,7 @@ class ADS7828():
         self._default_config()
 
         #Initialize I2C bus (SMBus) object
+        self._i2c_bus_num = smbus_num
         self._set_up_i2c_bus()
 
 
@@ -210,6 +210,19 @@ class ADS7828():
         
         return raw_voltage_avg
     
+    def set_vref(self, vref):
+        self._voltage_reference = vref
+
+    def get_vref(self):
+        return self._voltage_reference
+
+    def set_reference_warmup_time(self, time):
+        self._reference_warmup_time = time
+
+    def get_reference_warmup_time(self):
+        return self._reference_warmup_time
+        
+
 
     ###########################################################################
     ###########################################################################
@@ -447,4 +460,29 @@ class ADS7828():
         mv_per_cnt = self._voltage_reference / pow(2, self._bit_res)
 
         return mv_per_cnt * measurement_cnt
-        
+    
+    def _self_test_single_ended_iref_on_ad_on(self):
+        print("COLLECTION MEASUREMENTS WITH INTERNAL REF ON, A/D CONVERTER ON")
+        ch0 = self.read_channel_single_ended(0)
+        ch1 = self.read_channel_single_ended(1)
+        ch2 = self.read_channel_single_ended(2)
+        ch3 = self.read_channel_single_ended(3)
+        ch4 = self.read_channel_single_ended(4)
+        ch5 = self.read_channel_single_ended(5)
+        ch6 = self.read_channel_single_ended(6)
+        ch7 = self.read_channel_single_ended(7)
+        self._print_channel_measurement_table([ch0,ch1,ch2,ch3,ch4,ch5,ch6,ch7])
+
+    def _print_channel_measurement_table(chan_measurements):
+        #channel measurements shall be in [ch0, ch1,...,ch7] order
+        first_row = ['CHANNEL', 'MEASUREMENT (V)']
+        table = [first_row]
+        for i in range(8):
+            table.append([f'CH {i}', str(chan_measurements[i])])
+        print(tabulate(table,headers="firstrow", tablefmt="grid"))
+
+
+
+
+
+
