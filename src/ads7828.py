@@ -473,7 +473,7 @@ class ADS7828():
         ch7 = self.read_channel_single_ended(7)
         self._print_channel_measurement_table([ch0,ch1,ch2,ch3,ch4,ch5,ch6,ch7])
 
-    def _print_channel_measurement_table(chan_measurements):
+    def _print_channel_measurement_table(self, chan_measurements):
         #channel measurements shall be in [ch0, ch1,...,ch7] order
         first_row = ['CHANNEL', 'MEASUREMENT (V)']
         table = [first_row]
