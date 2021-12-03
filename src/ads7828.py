@@ -433,7 +433,9 @@ class ADS7828():
         # Write to device
         self._i2c_bus.write_byte(self._device_addr, 
                                  self._command_byte)
-        
+
+        print(f'_device_addr: {self._device_addr}')
+        print(f'_command_byte: {self._command_byte}')
         # Wait some ammount of time for reference to warmup 
         # see datasheet
         time.sleep(self._reference_warmup_time)
