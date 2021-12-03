@@ -456,6 +456,7 @@ class ADS7828():
 
         # Convert 12 bit count to measured voltage on the device pin
         raw_voltage = self._convert_dn_to_volts(raw_a2d_cnt)
+        return raw_voltage
 
     def _convert_dn_to_volts(self, measurement_cnt):
         # Millivolts per count
