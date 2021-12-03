@@ -405,7 +405,7 @@ class ADS7828():
         return self._send_cmd_and_read_device()
 
 
-    def _iref_and_ad_on_states(internal_ref_on, ad_on):
+    def _iref_and_ad_on_states(self, internal_ref_on, ad_on):
         """
         [PRIVATE] takes in a desired power state of the internal refence voltage and
         A/D converter and "ORs" them to produce a binary value that can be used to
