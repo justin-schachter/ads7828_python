@@ -182,7 +182,7 @@ class ADS7828():
 
     def read_channel_single_ended_averaged(self, channel, 
                                            internal_ref_on=True, ad_on=True,
-                                           num_measurements=10, dt=0.1):
+                                           num_measurements=100, dt=0.01):
         """
         Communicates with the device multiple times to collect a single-ended measurements 
         of a channel with input options for internal reference state and A/D converter state 
@@ -433,9 +433,10 @@ class ADS7828():
         # Write to device
         self._i2c_bus.write_byte(self._device_addr, 
                                  self._command_byte)
+        # print('self._send_cmd_and_read_device():)
+        # print(f'\t_device_addr: {self._device_addr}')
+        # print(f'\t_command_byte: {self._command_byte}')
 
-        print(f'_device_addr: {self._device_addr}')
-        print(f'_command_byte: {self._command_byte}')
         # Wait some ammount of time for reference to warmup 
         # see datasheet
         time.sleep(self._reference_warmup_time)
