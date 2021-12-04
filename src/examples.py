@@ -21,3 +21,5 @@ engineering_unit_ch4 = -1481.96 + math.sqrt(2.1962e6 + ((1.8639 - adc.read_chann
 engineering_unit_ch5 = adc.read_channel_single_ended_averaged(5) * ((100 + 12) / 12)        #V_VBATT_RAW: V1 = V2 * ((R1+R2)/R2) [voltage divider]
 engineering_unit_ch6 = adc.read_channel_single_ended_averaged(6) / (0.012 * 100)            #I_VBATT_RAW: I_LOAD = VOUT / (R_SENSE * GAIN)
 engineering_unit_ch7 = -1481.96 + math.sqrt(2.1962e6 + ((1.8639 - adc.read_channel_single_ended_averaged(7))/3.88e-6))
+
+adc._print_channel_measurement_table([engineering_unit_ch0,engineering_unit_ch1,engineering_unit_ch2,engineering_unit_ch3,engineering_unit_ch4,engineering_unit_ch5,engineering_unit_ch6,engineering_unit_ch7])
