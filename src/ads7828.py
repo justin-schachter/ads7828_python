@@ -7,6 +7,11 @@ import time
 import smbus2 as smbus
 from tabulate import tabulate
 
+#TODO: 
+# - Add differential reading support (for completeness)
+# - update docs
+# - add more API funcs? 
+
 ###########################################################################
 # ERROR CLASSES
 ###########################################################################
@@ -27,6 +32,9 @@ class AddressSelectionError(Exception):
                        f'hex: {list_of_available_addr_hex}\n'    
         super().__init__(self.message)
 
+###########################################################################
+# Main Class
+###########################################################################
 class ADS7828():
     ###########################################################################
     # DATASHEET: https://www.ti.com/lit/ds/symlink/ads7828.pdf?ts=1638489227527
@@ -496,9 +504,3 @@ class ADS7828():
         for i in range(8):
             table.append([f'CH {i}', str(chan_measurements[i])])
         print(tabulate(table,headers="firstrow", tablefmt="grid"))
-
-
-
-
-
-
