@@ -182,7 +182,7 @@ class ADS7828():
 
     def read_channel_single_ended_averaged(self, channel, 
                                            internal_ref_on=True, ad_on=True,
-                                           num_measurements=10, dt=10):
+                                           num_measurements=10, dt=0.1):
         """
         Communicates with the device multiple times to collect a single-ended measurements 
         of a channel with input options for internal reference state and A/D converter state 
