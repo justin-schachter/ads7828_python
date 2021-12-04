@@ -32,6 +32,9 @@ class AddressSelectionError(Exception):
                        f'hex: {list_of_available_addr_hex}\n'    
         super().__init__(self.message)
 
+###########################################################################
+# Main Class
+###########################################################################
 class ADS7828():
     ###########################################################################
     # DATASHEET: https://www.ti.com/lit/ds/symlink/ads7828.pdf?ts=1638489227527
