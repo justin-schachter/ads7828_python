@@ -7,6 +7,11 @@ import time
 import smbus2 as smbus
 from tabulate import tabulate
 
+#TODO: 
+# - Add differential reading support (for completeness)
+# - update docs
+# - add more API funcs? 
+
 ###########################################################################
 # ERROR CLASSES
 ###########################################################################
@@ -496,9 +501,3 @@ class ADS7828():
         for i in range(8):
             table.append([f'CH {i}', str(chan_measurements[i])])
         print(tabulate(table,headers="firstrow", tablefmt="grid"))
-
-
-
-
-
-
