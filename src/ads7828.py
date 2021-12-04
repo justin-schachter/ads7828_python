@@ -475,6 +475,18 @@ class ADS7828():
         ch6 = self.read_channel_single_ended(6)
         ch7 = self.read_channel_single_ended(7)
         self._print_channel_measurement_table([ch0,ch1,ch2,ch3,ch4,ch5,ch6,ch7])
+    
+    def _self_test_single_ended_iref_on_ad_on_averaged(self):
+        print("COLLECTION MEASUREMENTS WITH INTERNAL REF ON, A/D CONVERTER ON")
+        ch0 = self.read_channel_single_ended_averaged(0)
+        ch1 = self.read_channel_single_ended_averaged(1)
+        ch2 = self.read_channel_single_ended_averaged(2)
+        ch3 = self.read_channel_single_ended_averaged(3)
+        ch4 = self.read_channel_single_ended_averaged(4)
+        ch5 = self.read_channel_single_ended_averaged(5)
+        ch6 = self.read_channel_single_ended_averaged(6)
+        ch7 = self.read_channel_single_ended_averaged(7)
+        self._print_channel_measurement_table([ch0,ch1,ch2,ch3,ch4,ch5,ch6,ch7])
 
     def _print_channel_measurement_table(self, chan_measurements):
         #channel measurements shall be in [ch0, ch1,...,ch7] order
